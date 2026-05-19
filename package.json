@@ -1,5 +1,5 @@
 {
-  "name": "@homelab.org/git-ghost",
+  "name": "@tek-saas/git-ghost",
   "version": "1.0.15",
   "description": "Detects ghost files, duplicates, and orphaned dependencies — and opens a PR to clean them up",
   "bin": {
@@ -26,5 +26,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "type": "commonjs"
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tek-saas/git-ghost"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
