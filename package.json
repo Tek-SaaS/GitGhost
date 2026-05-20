@@ -1,6 +1,6 @@
 {
   "name": "@tek-saas/git-ghost",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Detects ghost files, duplicates, and orphaned dependencies — and opens a PR to clean them up",
   "bin": {
     "git-ghost": "bin/git-ghost.js"
