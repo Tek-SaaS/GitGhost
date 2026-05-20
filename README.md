@@ -1,7 +1,7 @@
 # 👻 GitGhost
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/MikeDMart/GitGhost/main/assets/logo.png" alt="GitGhost Logo" width="180">
+  <img src="https://raw.githubusercontent.com/tek-saas/git-ghost/main/assets/logo.png" alt="GitGhost Logo" width="180">
 </p>
 
 <p align="center">
@@ -9,11 +9,11 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-blue?style=flat-square">
-  <img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen?style=flat-square">
+  <img src="https://img.shields.io/badge/version-1.0.18-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen?style=flat-square">
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square">
-  <img src="https://img.shields.io/npm/dm/@homelab/git-ghost?style=flat-square">
+  <img src="https://img.shields.io/npm/dm/@tek-saas/git-ghost?style=flat-square">
 </p>
 
 ---
@@ -45,26 +45,34 @@ Nothing is permanently removed without your approval. Ghost files move to `.ghos
 
 **Via npm (recommended)**
 ```bash
-npm install -g @homelab/git-ghost
-Via GitHub
+npm install -g @tek-saas/git-ghost
+```
 
-bash
-git clone https://github.com/MikeDMart/GitGhost.git
-cd GitGhost
+**Via GitHub**
+```bash
+git clone https://github.com/tek-saas/git-ghost.git
+cd git-ghost
 npm link
-Without installing
+```
 
-bash
-npx github:MikeDMart/GitGhost audit
-Verify
+**Without installing**
+```bash
+npx @tek-saas/git-ghost audit
+```
 
-bash
-git-ghost --version
-# git-ghost v1.0.0
-Requires GitHub CLI (gh) for the --pr flag. Install it and run gh auth login once.
+**Verify**
+```bash
+git-ghost help
+# git-ghost v1.0.18
+```
 
-Quick Start
-bash
+> Requires **Node.js ≥ 20** and **GitHub CLI (`gh`)** for the `--pr` flag. Install `gh` and run `gh auth login` once.
+
+---
+
+## Quick Start
+
+```bash
 # Step into your project
 cd /path/to/your/repo
 
@@ -73,46 +81,59 @@ git-ghost audit
 
 # Fix everything and open a PR for review
 git-ghost fix --pr
+```
+
 That's it. Review the PR, restore anything you want back, merge when ready.
 
-Commands
-Command	Description
-git-ghost audit	Scan and report — no changes made
-git-ghost fix	Apply fixes on a new local branch
-git-ghost fix --pr	Apply fixes and open a GitHub Pull Request
-git-ghost restore <file>	Recover a file from .ghost/
-git-ghost history	Show all previous cleanup commits
-git-ghost help	Show usage information
-How it works
-Audit
+---
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `git-ghost audit` | Scan and report — no changes made |
+| `git-ghost fix` | Apply fixes on a new local branch |
+| `git-ghost fix --pr` | Apply fixes and open a GitHub Pull Request |
+| `git-ghost restore <file>` | Recover a file from `.ghost/` |
+| `git-ghost history` | Show all previous cleanup commits |
+| `git-ghost help` | Show usage information |
+
+---
+
+## How it works
+
+### Audit
+
 GitGhost scans your working directory and reports three categories of findings:
 
-Duplicate files — reads every .js, .css, .html, .json, and .md file, hashes the content with MD5, and flags any file whose hash matches another. The first occurrence is kept; duplicates are marked for removal.
+**Duplicate files** — reads every `.js`, `.css`, `.html`, `.json`, and `.md` file, hashes the content with MD5, and flags any file whose hash matches another. The first occurrence is kept; duplicates are marked for removal.
 
-Orphaned images — finds every .png, .jpg, .jpeg, .gif, .svg, and .webp file, then checks whether its filename or path appears anywhere in your source code. If nothing references it, it's a ghost.
+**Orphaned images** — finds every `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, and `.webp` file, then checks whether its filename or path appears anywhere in your source code. If nothing references it, it's a ghost.
 
-Dead dependencies — reads dependencies and devDependencies from package.json and checks whether each package name appears in a require() or import statement anywhere in your JS/TS files. If it doesn't, it's flagged.
+**Dead dependencies** — reads `dependencies` and `devDependencies` from `package.json` and checks whether each package name appears in a `require()` or `import` statement anywhere in your JS/TS files. If it doesn't, it's flagged.
 
-Fix
-When you run git-ghost fix:
+### Fix
 
-Creates a branch named fix/git-ghost-<timestamp>
+When you run `git-ghost fix`:
 
-Moves orphaned images to .ghost/ (preserving directory structure)
+1. Creates a branch named `fix/git-ghost-<timestamp>`
+2. Moves orphaned images to `.ghost/` (preserving directory structure)
+3. Deletes confirmed duplicate files (keeping the first occurrence)
+4. Commits all changes with a detailed message
+5. Pushes the branch to `origin`
+6. Optionally opens a Pull Request with a review checklist
 
-Deletes confirmed duplicate files (keeping the first occurrence)
+> **Note:** Dead dependencies are **flagged in the audit and commit message** but are not automatically removed from `package.json`. Review them manually and remove entries as appropriate after the PR is merged.
 
-Commits all changes with a detailed message
+Nothing in `.ghost/` is deleted — it's a quarantine folder, not a trash can.
 
-Pushes the branch to origin
+---
 
-Optionally opens a Pull Request with a review checklist
+## Examples
 
-Nothing in .ghost/ is deleted — it's a quarantine folder, not a trash can.
+### Basic audit
 
-Examples
-Basic audit
-text
+```
 $ git-ghost audit
 
 👻 git-ghost audit
@@ -134,8 +155,11 @@ $ git-ghost audit
 
 💡 Tip:
   Run git-ghost fix --pr to open a PR with all fixes applied
-Automated cleanup with PR
-text
+```
+
+### Automated cleanup with PR
+
+```
 $ git-ghost fix --pr
 
 👻 git-ghost fix
@@ -161,8 +185,11 @@ $ git-ghost fix --pr
 📬 Pull Request created: https://github.com/username/my-app/pull/123
 
 ✅ Branch ready: fix/git-ghost-1743872154321
-Restoring a file
-text
+```
+
+### Restoring a file
+
+```
 $ git-ghost restore assets/old-logo.png
 
 👻 git-ghost restore
@@ -173,8 +200,11 @@ $ git-ghost restore assets/old-logo.png
 💡 To commit the restoration:
   git add assets/old-logo.png
   git commit -m "restore: recover assets/old-logo.png"
-Viewing history
-text
+```
+
+### Viewing history
+
+```
 $ git-ghost history
 
 👻 git-ghost history
@@ -188,9 +218,14 @@ $ git-ghost history
 
 👻 Files currently in .ghost/: 21
 💡 To restore: git-ghost restore <file>
-Project structure
-text
-GitGhost/
+```
+
+---
+
+## Project structure
+
+```
+git-ghost/
 ├── bin/
 │   └── git-ghost.js      # CLI entry point
 ├── lib/
@@ -202,8 +237,13 @@ GitGhost/
 ├── .gitignore
 ├── package.json
 └── README.md
-Workflow
-text
+```
+
+---
+
+## Workflow
+
+```
 your repo
     │
     ▼
@@ -217,46 +257,63 @@ review PR on GitHub      ← check what was removed, restore if needed
     │
     ▼
 merge                    ← repo is clean
+```
+
 If anything was removed by mistake:
 
-text
-git-ghost restore <file>    ← pulls it back from .ghost/
+```bash
+git-ghost restore <file>    # pulls it back from .ghost/
 git add <file>
 git commit -m "restore: recover <file>"
-Tech stack
-Node.js — runtime
+```
 
-glob — recursive file pattern matching
+---
 
-crypto — MD5 hashing for duplicate detection
+## Tech stack
 
-child_process — git and gh CLI integration
+- **Node.js ≥ 20** — runtime
+- **glob** — recursive file pattern matching
+- **crypto** — MD5 hashing for duplicate detection
+- **child_process** — git and gh CLI integration
+- **fs / path** — file operations and ghost quarantine
 
-fs / path — file operations and ghost quarantine
+---
 
-Contributing
+## Contributing
+
 Contributions are welcome. Here's how:
 
-bash
+```bash
 # Fork the repo, then:
 git checkout -b feature/your-feature
 git commit -m 'feat: describe your change'
 git push origin feature/your-feature
 # Open a Pull Request
-Found a bug? Open an issue in the issue tracker.
+```
 
-Roadmap
-Support for more file types (PDF, DOC, SVG sprites)
+Found a bug? Open an issue in the [issue tracker](https://github.com/tek-saas/git-ghost/issues).
 
-GitHub Actions integration for automated CI runs
+---
 
-HTML audit reports
+## Roadmap
 
-GitLab and Bitbucket support
+- [ ] Support for more file types (PDF, DOC, SVG sprites)
+- [ ] GitHub Actions integration for automated CI runs
+- [ ] Automatic removal of dead dependencies from `package.json`
+- [ ] HTML audit reports
+- [ ] GitLab and Bitbucket support
+- [ ] Config file (`.ghostrc`) for custom ignore patterns
 
-Config file (.ghostrc) for custom ignore patterns
+---
 
-License
-MIT © MikeDMart
+## License
 
-<p align="center"> <a href="https://github.com/MikeDMart/GitGhost">⭐ Star on GitHub</a> &nbsp;·&nbsp; <a href="https://github.com/MikeDMart/GitGhost/issues">🐛 Report a bug</a> &nbsp;·&nbsp; <a href="https://github.com/MikeDMart/GitGhost/issues">💡 Request a feature</a> </p> ```
+MIT © [tek-saas](https://github.com/tek-saas)
+
+<p align="center">
+  <a href="https://github.com/tek-saas/git-ghost">⭐ Star on GitHub</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/tek-saas/git-ghost/issues">🐛 Report a bug</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/tek-saas/git-ghost/issues">💡 Request a feature</a>
+</p>

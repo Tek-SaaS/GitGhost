@@ -17,6 +17,7 @@
   "author": "MikeDMart",
   "license": "MIT",
   "dependencies": {
+    "@tek-saas/git-ghost": "^1.0.18",
     "glob": "^11.0.0"
   },
   "main": "index.js",
